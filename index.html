@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-themes="tokyo-night,dracula,catppuccin-mocha,nord,corporate-clean">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>从知识到行动：Skills 如何重构 AI Agent 的能力边界</title>
+<link rel="stylesheet" href="/Users/shuangyao/.workbuddy/skills/html-ppt/assets/fonts.css">
+<link rel="stylesheet" href="/Users/shuangyao/.workbuddy/skills/html-ppt/assets/base.css">
+<link rel="stylesheet" id="theme-link" href="/Users/shuangyao/.workbuddy/skills/html-ppt/assets/themes/tokyo-night.css">
+<link rel="stylesheet" href="/Users/shuangyao/.workbuddy/skills/html-ppt/assets/animations/animations.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="tpl-presenter-mode-reveal">
+<div class="deck">
+
+  <!-- ============ 1. COVER ============ -->
+  <section class="slide" data-title="Cover">
+    <p class="kicker">复旦大学 · 2026 技术分享</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">从知识到行动<br><span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">Skills 如何重构</span><br>AI Agent 的能力边界</h1>
+    <p class="lede mt-m">按 <span class="mono">S</span> 进入演讲者视图 · <span class="mono">T</span> 切换主题 · <span class="mono">← →</span> 翻页</p>
+    <div class="speaker">
+      <div class="av"></div>
+      <div><b>姚双</b><span>晴幂科技创始人 · Fudan University · 120 min</span></div>
+    </div>
+    <div class="deck-footer">
+      <span class="mono">#Skills #AIAgent #从知识到行动</span>
+      <span class="slide-number" data-current="1" data-total="35"></span>
+    </div>
+    <aside class="notes">
+      <p>各位老师、各位同学，大家下午好！我是姚双，晴幂科技创始人。非常荣幸能在复旦大学做这场分享。</p>
+      <p>今天我要聊的主题是——<strong>从知识到行动：Skills 如何重构 AI Agent 的能力边界</strong>。这不是一个纯技术的议题，它关乎 AI 从"懂"到"做"之间的那道鸿沟，以及一群工程师如何用一个叫 Skills 的东西试图跨越它。</p>
+      <p>在正式开始之前，先介绍一下这个演示工具本身。这是一个支持<strong>演讲者模式</strong>的 HTML 幻灯片，按 S 键可以打开演讲者视图——当前页、下一页、逐字稿、计时器四块信息。我自己会全程开着讲，你们可以观察效果。</p>
+      <p>今天分享大概 2 小时，分 6 个部分。有问题随时打断我。Let's go.</p>
+    </aside>
+  </section>
+
+  <!-- ============ 2. WHY ============ -->
+  <section class="slide" data-title="Why">
+    <p class="kicker">// 开场 · 一个真实的痛点</p>
+    <h2 class="h2">你有没有遇到过这种场景？</h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent">
+        <h4>😵 反复教 AI 做同一件事</h4>
+        <p class="dim">每周都要跟 AI 重新描述一遍营销数据怎么分析、报告格式长什么样、预算规则有哪些……<strong>同样的 prompt 写了不下 20 次</strong>。</p>
+      </div>
+      <div class="card card-accent">
+        <h4>😤 AI 的输出永远不稳定</h4>
+        <p class="dim">同一段指令，今天输出专业报告，明天就给你一堆口水话。<strong>没有流程约束，AI 永远在"自由发挥"</strong>。</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🤯 团队知识无法复用</h4>
+        <p class="dim">你的 prompt 调教得很好，但同事完全不知道。团队里每个人都在<strong>从零开始驯化自己的 AI</strong>。</p>
+      </div>
+      <div class="card card-accent">
+        <h4>😰 外部工具接不上</h4>
+        <p class="dim">AI 明明能写代码、能分析数据，但就是连不上你的数据库、打不开你的文档系统。<strong>能力在那里，通路不通</strong>。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>在正式讲 Skills 之前，我想先让大家感受一下<strong>痛点</strong>。</p>
+      <p>左上角这张卡片——"反复教 AI 做同一件事"——这个我相信在场很多人有共鸣。你每个礼拜都要告诉 AI 怎么分析你的营销数据、报告格式长什么样、预算分配规则有哪些。同样的话说了 20 遍，AI 还是像第一次听到一样。</p>
+      <p>右上角更恼人——<strong>输出不稳定</strong>。今天你拿到一份专业报告，明天同样的 prompt 出来一堆口水话。因为没有流程约束，AI 永远在"自由发挥"。</p>
+      <p>左下角是团队层面的问题——你花了两周调教出来的 prompt，同事完全不知道。每个人都从零开始驯化自己的 AI。</p>
+      <p>右下角是系统层面——AI 明明有这个能力，但连不上你的数据库、打不开你的文档。<strong>能力在那里，通路不通</strong>。</p>
+      <p>这四个痛点，本质上指向同一个问题：AI <em>拥有知识</em>，但缺乏<em>可复用的行动路径</em>。这就是今天整个分享要解决的命题。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 3. AGENDA ============ -->
+  <section class="slide" data-title="Agenda">
+    <p class="kicker">agenda</p>
+    <h2 class="h2">今天要讲的 6 个部分</h2>
+    <div class="stack mt-l">
+      <div class="agenda-row"><span class="num">01</span><span class="t">Skills 的由来：从专用 Agent 到通用 Agent 的范式转换</span><span class="d">~20min</span></div>
+      <div class="agenda-row"><span class="num">02</span><span class="t">Skills 的发展：开放标准、生态爆发与社区力量</span><span class="d">~25min</span></div>
+      <div class="agenda-row"><span class="num">03</span><span class="t">最新动态：2026 年的技术突破与产业进展</span><span class="d">~20min</span></div>
+      <div class="agenda-row"><span class="num">04</span><span class="t">实战经验：WorkBuddy 的 Skills 落地实践</span><span class="d">~30min</span></div>
+      <div class="agenda-row"><span class="num">05</span><span class="t">未来趋势：Skills 将走向何方</span><span class="d">~15min</span></div>
+      <div class="agenda-row"><span class="num">06</span><span class="t">核心洞察 + Q&A</span><span class="d">~10min</span></div>
+    </div>
+    <aside class="notes">
+      <p>先过一下今天的议程。六个部分，我分配了大致的时间。</p>
+      <p>第一部分讲<strong>"由来"</strong>——为什么会出现 Skills 这个概念？AI Agent 从专用走向通用的过程中，缺了什么？</p>
+      <p>第二部分讲<strong>"发展"</strong>——从 Anthropic 内部的一个实验，到成为行业开放标准，再到 40 多个平台采纳，这段历程非常精彩。</p>
+      <p>第三部分讲<strong>"最新动态"</strong>——2026 年发生了什么？开源仓库 138k Star 背后的故事、deeplearning.ai 的课程、技能市场的爆发。</p>
+      <p>第四部分是今天的<strong>重点</strong>——实战经验。我会用 WorkBuddy 的真实案例，展示 Skills 从设计到落地到迭代的全过程。</p>
+      <p>第五部分看<strong>未来</strong>——技能市场、自进化技能、跨平台互操作，这些不是科幻，而是正在发生的事。</p>
+      <p>最后总结 + 互动。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 4. SECTION: ORIGIN ============ -->
+  <section class="slide section-divider" data-title="Part 1">
+    <p class="kicker">part 01</p>
+    <h2 class="h1" style="font-size:clamp(36px,4.5vw,62px)">Skills 的由来</h2>
+    <p class="lede">从专用 Agent 到通用 Agent 的范式转换</p>
+    <aside class="notes">
+      <p>好，我们正式进入第一部分——<strong>Skills 的由来</strong>。</p>
+      <p>要理解 Skills 为什么会出现，我们得先回到 AI Agent 的演进历程，看看从"专用"到"通用"这个范式转换中，到底缺了什么。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 5. AGENT EVOLUTION ============ -->
+  <section class="slide" data-title="Agent Evolution">
+    <p class="kicker">// part 01 · 演进</p>
+    <h2 class="h2">AI Agent 的三个时代</h2>
+    <div class="stack mt-l">
+      <div class="rule-row">
+        <span class="num blue">01</span>
+        <div>
+          <b>专用 Agent 时代（2023 以前）</b>
+          <p class="dim">Research Agent、Coding Agent、Finance Agent……每个 Agent 有自己的脚手架、自己的工具集、自己的知识。像 <strong>瑞士军刀</strong>——每把刀只能做一件事，但做得还行。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">02</span>
+        <div>
+          <b>通用 Agent 时代（2024–2025）</b>
+          <p class="dim">Claude、GPT-4、Gemini——一个模型搞定一切。代码即通用接口，bash + 文件系统就是脚手架。但<strong>通用 = 没有专长</strong>，缺的是上下文和领域专知。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num orange">03</span>
+        <div>
+          <b>技能增强 Agent 时代（2025–至今）</b>
+          <p class="dim">通用 Agent + 可插拔的技能模块 = 既通用又专业。Skills 提供按需加载的<strong>过程性知识和团队上下文</strong>，补齐了最后一公里。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>AI Agent 经历了三个时代。</p>
+      <p><strong>第一个时代是专用 Agent</strong>。2023 年以前，我们看到的是 Research Agent、Coding Agent、Finance Agent 这种分工很细的 AI。每个 Agent 有自己的脚手架、自己的工具集。像瑞士军刀——每把刀只能做一件事，但做得还行。</p>
+      <p><strong>第二个时代是通用 Agent</strong>。2024 到 2025 年，大模型能力上来了，Claude、GPT-4、Gemini 这些一个模型搞定一切。代码就是通用接口，bash 加文件系统就是脚手架。但问题也来了——<em>通用等于没有专长</em>。你让它分析营销数据，它不知道你的预算规则；你让它写报告，它不知道你们公司的格式要求。</p>
+      <p><strong>第三个时代就是我们现在看到的——技能增强 Agent</strong>。通用 Agent 加上可插拔的技能模块，既通用又专业。Skills 提供了按需加载的<strong>过程性知识和团队上下文</strong>，补齐了从"懂"到"做好"的最后一公里。</p>
+      <p>这个范式的转换，就是 Skills 出现的根本原因。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 6. WHAT'S MISSING ============ -->
+  <section class="slide" data-title="What's Missing">
+    <p class="kicker">// part 01 · 核心缺口</p>
+    <h2 class="h2">通用 Agent <span class="accent">缺什么</span>？</h2>
+    <div class="grid g3 mt-l">
+      <div class="card card-accent">
+        <h4>🧠 领域专知</h4>
+        <p class="dim">品牌规范与模板、法律审查流程、数据分析方法论——这些<strong>隐性知识</strong>不在训练数据里。</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🔄 可重复工作流</h4>
+        <p class="dim">每周营销复盘、客户 call 前的准备流程、季度业务评审——<strong>流程不是知识，是肌肉记忆</strong>。</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🛠 新能力</h4>
+        <p class="dim">创建 PPT、生成 Excel 报告、构建 MCP 服务器——<strong>能力可以被"教会"</strong>，而不是等下一个模型版本。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>所以通用 Agent 到底缺什么？我把它归纳为三个维度。</p>
+      <p><strong>第一个是领域专知</strong>。品牌规范和法律审查流程这种东西，叫"隐性知识"——它不在公开的训练数据里，而是藏在公司的 wiki、流程文档、老员工的脑子里。你没法指望一个通用模型知道你们公司怎么写周报。</p>
+      <p><strong>第二个是可重复工作流</strong>。每周的营销复盘、客户 call 前的准备、季度业务评审——这些流程不是"知识点"，是<strong>肌肉记忆</strong>。你做第 10 次的时候，不该再从头教 AI 怎么做第 1 次。</p>
+      <p><strong>第三个是新能力</strong>。创建 PPT、生成 Excel 报告、构建 MCP 服务器——这些能力不需要等下一个大模型版本。通过 Skills，<em>你可以现在就把这些能力"教"给 AI</em>。</p>
+      <p>这三个维度，就是 Skills 要填补的缺口。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 7. FROM PROMPT TO SKILLS ============ -->
+  <section class="slide" data-title="Prompt to Skills">
+    <p class="kicker">// part 01 · 演变路径</p>
+    <h2 class="h2">从 Prompt Engineering 到 Skills</h2>
+    <div class="stack mt-l">
+      <div class="agenda-row"><span class="num" style="color:var(--text-3)">01</span><span class="t">Zero-shot Prompting — "帮我分析这个数据"</span><span class="d">2023 初</span></div>
+      <div class="agenda-row"><span class="num" style="color:var(--text-3)">02</span><span class="t">Few-shot Examples — 在 prompt 里塞几个例子</span><span class="d">2023 中</span></div>
+      <div class="agenda-row"><span class="num" style="color:var(--text-3)">03</span><span class="t">System Prompt Engineering — 角色扮演 + 规则注入</span><span class="d">2023 末</span></div>
+      <div class="agenda-row"><span class="num" style="color:var(--text-3)">04</span><span class="t">Custom Instructions — 可持久化的偏好设置</span><span class="d">2024 初</span></div>
+      <div class="agenda-row" style="border-color:var(--accent);"><span class="num">05</span><span class="t"><strong>Skills — 可复用、可组合、可分发的知识包</strong></span><span class="d">2025</span></div>
+    </div>
+    <aside class="notes">
+      <p>如果我们把"怎么让 AI 按你的要求做事"这条演进路径拉出来看，会非常清晰。</p>
+      <p>最早是<strong>Zero-shot Prompting</strong>——直接跟 AI 说"帮我分析这个数据"，祈祷它能理解。然后是<strong>Few-shot Examples</strong>——在 prompt 里塞几个例子，让它模仿。接着是<strong>System Prompt Engineering</strong>——给 AI 一个角色，注入规则。再到<strong>Custom Instructions</strong>——至少不用每次都重新说了，偏好可以持久化。</p>
+      <p>但所有这些方案都有一个根本问题——<em>不可复用、不可组合、不可分发</em>。你精心调教出来的 system prompt，同事要用还得重新复制一遍。</p>
+      <p>所以第五步就是<strong>Skills</strong>。一个 Skill 是一个<strong>可复用、可组合、可分发的知识包</strong>。你写一次，整个团队、甚至整个互联网都可以用。这是质的飞跃，不是量的积累。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 8. SKILLS DEFINITION ============ -->
+  <section class="slide" data-title="What Are Skills">
+    <p class="kicker">// part 01 · 定义</p>
+    <h2 class="h2">什么是 <span class="accent">Agent Skills</span>？</h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="card card-accent" style="border-left:4px solid var(--accent)">
+          <h4 style="color:var(--accent)">一句话定义</h4>
+          <p class="dim" style="font-size:16px;line-height:1.8">Agent Skills 是一种<strong>轻量级、开放的标准格式</strong>，用于扩展 AI Agent 的能力和专业知识。一个 Skill 是一个包含<strong>指令、脚本、资源和资产</strong>的标准化文件夹集合。</p>
+        </div>
+        <p class="lede mt-m" style="font-size:15px;color:var(--text-3)">类比：如果 Agent 是操作系统，Skill 就是 App；如果 Agent 是人，Skill 就是培训手册。</p>
+      </div>
+      <div>
+        <div class="feature-row"><span class="num blue">①</span><div><b>便携性 Portable</b><p class="dim">同一 Skill 跨 Claude Code、Claude.ai、API、Agent SDK 使用</p></div></div>
+        <div class="feature-row"><span class="num green">②</span><div><b>可组合 Composable</b><p class="dim">品牌 Skill + PPT Skill + 数据 Skill = 完整报告工作流</p></div></div>
+        <div class="feature-row"><span class="num orange">③</span><div><b>渐进披露 Progressive</b><p class="dim">元数据始终加载、指令按需加载、资源执行时加载</p></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>那 Skills 到底是什么？我给出一个正式的定义。</p>
+      <p><strong>Agent Skills 是一种轻量级、开放的标准格式</strong>，用于扩展 AI Agent 的能力和专业知识。一个 Skill 是一个包含指令、脚本、资源和资产的标准化文件夹集合。</p>
+      <p>如果用类比来说——<em>如果 Agent 是操作系统，Skill 就是 App</em>；如果 Agent 是一个人，Skill 就是你给他报的培训课程。学完之后，他就能在特定领域做得跟老手一样好。</p>
+      <p>Skills 有三个核心特性。第一，<strong>便携性</strong>——同一个 Skill 可以跨平台使用：Claude Code、Claude.ai、API、Agent SDK，甚至其他支持标准的 Agent 产品。</p>
+      <p>第二，<strong>可组合性</strong>——品牌 Skill 提供视觉规范、PPT Skill 提供幻灯片能力、数据 Skill 提供查询逻辑，组合起来就是一个完整的报告工作流。这是最强大的地方。</p>
+      <p>第三，<strong>渐进披露</strong>——这是技术上的关键创新，下一页我会专门讲。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 9. PROGRESSIVE DISCLOSURE ============ -->
+  <section class="slide" data-title="Progressive Disclosure">
+    <p class="kicker">// part 01 · 核心机制</p>
+    <h2 class="h2">渐进式披露：<span class="accent">三层加载</span></h2>
+    <div class="stack mt-l">
+      <div class="rule-row">
+        <span class="num blue">L1</span>
+        <div>
+          <b>元数据层 — 始终加载</b>
+          <p class="dim">启动时加载每个 Skill 的 <code>name</code> + <code>description</code>，仅用于判断是否与当前任务相关。<strong>上下文成本：~100 tokens / Skill</strong></p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">L2</span>
+        <div>
+          <b>指令层 — 触发时加载</b>
+          <p class="dim">任务匹配时，完整加载 SKILL.md 的正文内容。<strong>建议 < 500 行</strong>，提供详细执行逻辑和步骤。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num orange">L3</span>
+        <div>
+          <b>资源层 — 执行中按需加载</b>
+          <p class="dim">脚本、模板、参考文档——只在 Agent 实际执行到某一步时才读取。<strong>真正的大块头在这里，但不到用时不占上下文</strong>。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>渐进式披露是 Skills 最重要的技术创新。它解决了一个核心矛盾——<strong>你可能有上百个 Skill，但不能让它们全部塞进上下文窗口</strong>。</p>
+      <p>所以 Skills 设计了<strong>三层加载机制</strong>。</p>
+      <p><strong>第一层是元数据</strong>。系统启动时，只加载每个 Skill 的名字和描述，大概 100 个 token。这意味着你有 100 个 Skill 也只占 1 万个 token，非常轻量。这层的作用就是让 Agent 知道"我有什么技能可以调用"。</p>
+      <p><strong>第二层是指令</strong>。当 Agent 判断某个 Skill 跟当前任务相关时，才把完整的 SKILL.md 正文加载进来。建议控制在 500 行以内，这样既能提供详细的执行逻辑，又不会撑爆上下文。</p>
+      <p><strong>第三层是资源</strong>。脚本、模板、参考文档——这些才是真正的大块头，但它们只有在 Agent 实际执行到某一步时才读取。比如一个 PDF 处理的 Skill，里面可能有十几个 Python 脚本，但你不处理 PDF 的时候它们完全不会占用上下文。</p>
+      <p>这个三层设计非常优雅，让 Agent 可以<strong>储备大量技能但保持轻量</strong>。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 10. SKILL STRUCTURE ============ -->
+  <section class="slide" data-title="Skill Structure">
+    <p class="kicker">// part 01 · 结构</p>
+    <h2 class="h2">一个 Skill 长什么样？</h2>
+    <div class="grid g3 mt-l">
+      <div class="card card-accent">
+        <h4>📁 最简结构</h4>
+        <div class="code-block" style="font-size:13px;line-height:1.7">
+<span class="cmd">analyzing-marketing-campaign/</span>
+├── <span class="flag">SKILL.md</span>
+└── references/
+    └── budget_reallocation_rules.md
+        </div>
+      </div>
+      <div class="card card-accent">
+        <h4>📁 中等结构</h4>
+        <div class="code-block" style="font-size:13px;line-height:1.7">
+<span class="cmd">pdf/</span>
+├── <span class="flag">SKILL.md</span>
+├── forms.md
+├── reference.md
+└── scripts/
+    ├── check_fillable_fields.py
+    ├── convert_pdf_to_images.py
+    └── extract_form_field_info.py
+        </div>
+      </div>
+      <div class="card card-accent">
+        <h4>📁 完整结构</h4>
+        <div class="code-block" style="font-size:13px;line-height:1.7">
+<span class="cmd">designing-newsletters/</span>
+├── <span class="flag">SKILL.md</span>
+├── references/
+│   └── style-guide.md
+└── assets/
+    ├── header.png
+    ├── icons/
+    └── templates/
+        ├── newsletter.html
+        └── layout.docx
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>看一下 Skill 的物理结构。最简的形式——一个 SKILL.md 加一个 references 文件夹，就构成一个完整的 Skill。</p>
+      <p>中间这个是 PDF 处理的 Skill，它多了一些脚本文件，比如检查可填写字段、PDF 转图片、提取表单信息——这些都是 Python 脚本，放在 scripts 目录里。</p>
+      <p>右边这个更完整，是设计邮件的 Skill，有 assets 目录放图片和模板。你可以看到，Skills 的复杂度是<strong>按需增长</strong>的——简单任务只需要一个 SKILL.md，复杂工作流可以包含脚本、模板、参考文档全套。</p>
+      <p>注意一个关键点：<strong>SKILL.md 是唯一必须的文件</strong>。它既是元数据容器，也是指令入口。下面我展示一下它长什么样。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 11. SKILL.MD ANATOMY ============ -->
+  <section class="slide" data-title="SKILL.md Anatomy">
+    <p class="kicker">// part 01 · 核心文件</p>
+    <h2 class="h2">SKILL.md 的<strong>解剖</strong></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="code-block" style="font-size:13.5px;line-height:1.75">
+<span class="comment">---</span>
+<span class="cmd">name:</span> <span class="flag">analyzing-marketing-campaign</span>
+<span class="cmd">description:</span> <span class="flag">Analyze marketing campaign
+  performance data and generate reports.
+  Use when provided with campaign data
+  files or asked to analyze marketing
+  metrics.</span>
+<span class="cmd">license:</span> <span class="flag">MIT</span>
+<span class="cmd">metadata:</span>
+  <span class="cmd">author:</span> <span class="flag">marketing-team</span>
+  <span class="cmd">version:</span> <span class="flag">2.0.0</span>
+<span class="comment">---</span>
+
+<span class="comment"># Analyzing Marketing Campaign</span>
+
+<span class="comment">## Step 1: Data Loading & Validation</span>
+Load the provided CSV and validate column
+names against the expected schema...
+
+<span class="comment">## Step 2: Metric Computation</span>
+Calculate CPA, ROAS, CTR using the
+formulas in references/...
+
+<span class="comment">## Step 3: Report Generation</span>
+Output a formatted Excel report using...
+        </div>
+      </div>
+      <div>
+        <div class="feature-row"><span class="num blue">①</span><div><b>YAML Frontmatter — 元数据</b><p class="dim"><code>name</code>（必填）：小写+连字符，建议 gerund 形式<br><code>description</code>（必填）：说明"做什么"和"何时用"</p></div></div>
+        <div class="feature-row"><span class="num green">②</span><div><b>Body — Markdown 指令</b><p class="dim">告诉 Agent <strong>怎么做</strong>：步骤、输入格式、输出格式、常见边界情况</p></div></div>
+        <div class="feature-row"><span class="num orange">③</span><div><b>写作建议</b><p class="dim">控制在 500 行以内；详细资料移至 references/；引用层级保持一层；<strong>描述要具体到能触发自动匹配</strong></p></div></div>
+        <div class="feature-row"><span class="num purple">④</span><div><b>自由度控制</b><p class="dim"><strong>高自由度</strong>：文本指导 → <strong>中自由度</strong>：伪代码/模式 → <strong>低自由度</strong>：精确脚本</p></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>SKILL.md 是 Skill 的灵魂。它分两大块——顶部的 YAML 元数据和下面的 Markdown 指令。</p>
+      <p>元数据里，<strong>name 和 description 是必填的</strong>。name 要用小写加连字符，建议用动名词形式，比如 analyzing-marketing-campaign。description 非常关键——它不只说明 Skill 做什么，还要说明<strong>何时触发</strong>。因为这个 description 就是 Agent 判断要不要调用这个 Skill 的依据。</p>
+      <p>正文部分就是纯 Markdown，告诉 Agent 怎么做。建议写成步骤形式：第一步做什么、第二步做什么。控制 500 行以内，详细的参考资料放到 references 目录。</p>
+      <p>右下角这个"自由度控制"值得多说两句。你的 Skill 可以设计成不同粒度——<em>高自由度</em>就是给个方向，AI 自己发挥；<em>中自由度</em>是给伪代码和模式，有个参考但允许变化；<em>低自由度</em>就是精确脚本，必须严格按流程走。具体用哪种，取决于你的场景对一致性的要求。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 12. SECTION: DEVELOPMENT ============ -->
+  <section class="slide section-divider" data-title="Part 2">
+    <p class="kicker">part 02</p>
+    <h2 class="h1" style="font-size:clamp(36px,4.5vw,62px)">Skills 的发展</h2>
+    <p class="lede">开放标准、生态爆发与社区力量</p>
+    <aside class="notes">
+      <p>好，第一部分讲完了 Skills 的由来。现在进入第二部分——<strong>Skills 的发展历程</strong>。</p>
+      <p>从 Anthropic 内部的一个实验，到成为行业开放标准，再到 40 多个平台采纳，这段历程非常精彩。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 13. TIMELINE ============ -->
+  <section class="slide" data-title="Timeline">
+    <p class="kicker">// part 02 · 时间线</p>
+    <h2 class="h2">Skills 发展<span class="accent">时间线</span></h2>
+    <div class="stack mt-m">
+      <div class="agenda-row"><span class="num">2024.Q3</span><span class="t">Anthropic 内部开始探索可复用的 Agent 指令包</span><span class="d">🌱 萌芽</span></div>
+      <div class="agenda-row"><span class="num">2024.Q4</span><span class="t">Claude Code 首次引入 slash commands → 演化为 Skills</span><span class="d">🔬 实验</span></div>
+      <div class="agenda-row"><span class="num">2025.Q1</span><span class="t">Claude.ai 上线 Skills 功能，免费用户可用</span><span class="d">🚀 发布</span></div>
+      <div class="agenda-row"><span class="num">2025.Q2</span><span class="t">Skills 开放标准发布（agentskills.io），40+ 平台采纳</span><span class="d">🌐 开放</span></div>
+      <div class="agenda-row"><span class="num">2025.Q3</span><span class="t">deeplearning.ai 推出 Agent Skills 专项课程</span><span class="d">📚 教育</span></div>
+      <div class="agenda-row" style="border-color:var(--accent)"><span class="num">2026.Q1</span><span class="t"><strong>anthropics/skills 开源仓库 138k Star</strong>，技能市场爆发</span><span class="d">🔥 爆发</span></div>
+    </div>
+    <aside class="notes">
+      <p>拉一条时间线出来看，Skills 的发展速度是惊人的。</p>
+      <p>2024 年第三季度，Anthropic 内部开始探索——能不能把 Agent 的指令打包成可复用的单元？那个时候还叫"slash commands"，是 Claude Code 的一个实验性功能。</p>
+      <p>到了 2024 年底，slash commands 演化成了更正式的 Skills 概念。2025 年初 Claude.ai 上线了 Skills 功能，免费用户也能用——这是一个重要的信号，说明 Anthropic 决心把这个东西做大。</p>
+      <p>2025 年第二季度是<strong>关键转折点</strong>——Skills 从 Claude 专有功能变成了行业开放标准。agentskills.io 上线，40 多个平台宣布采纳。这是真正意义上的<strong>从私有到公共</strong>的跨越。</p>
+      <p>2025 年第三季度，deeplearning.ai 推出了专项课程。2026 年初，anthropics/skills 开源仓库斩获 138k Star。</p>
+      <p>从内部实验到 138k Star，<strong>不到两年</strong>。这个速度说明什么？说明业界对"Agent 可复用能力模块"这个需求是真实且迫切的。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 14. OPEN STANDARD ============ -->
+  <section class="slide" data-title="Open Standard">
+    <p class="kicker">// part 02 · 开放标准</p>
+    <h2 class="h2">为什么<strong>开放标准</strong>是关键？</h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent">
+        <h4>🔒 没有标准的世界</h4>
+        <p class="dim">每个 AI 产品自己做一套"插件系统"：<br>• A 平台的技能不能在 B 平台用<br>• 开发者要为每个平台各写一份<br>• 用户被锁定在单一生态</p>
+      </div>
+      <div class="card card-accent" style="border-top-color:var(--good)">
+        <h4>🔓 有标准的世界</h4>
+        <p class="dim">一个 Skill 文件夹，所有平台通用：<br>• 开发者写一次，到处运行<br>• 用户换平台不丢失技能<br>• 社区贡献复利增长</p>
+      </div>
+    </div>
+    <div class="mt-m" style="padding:16px 20px;border:1px solid var(--border);border-radius:10px;background:var(--surface)">
+      <b style="color:var(--accent)">agentskills.io 规范核心</b>
+      <p class="dim" style="margin:8px 0 0 0">① 技能目录结构标准 &nbsp;② SKILL.md 元数据标准 &nbsp;③ 技能接口协议 &nbsp;④ 安全审计标准 &nbsp;⑤ 发布与版本管理</p>
+    </div>
+    <aside class="notes">
+      <p>为什么开放标准这么重要？我做一个对比就很清楚了。</p>
+      <p>左边是<strong>没有标准的世界</strong>——每个 AI 产品自己做一套"插件系统"。你在 Claude 上写的技能，在 Cursor 上用不了；开发者要为每个平台各写一份；用户一旦用了某个平台就被锁死了。</p>
+      <p>右边是<strong>有标准的世界</strong>——一个 Skill 文件夹，所有支持标准的平台通用。开发者写一次到处运行，用户换平台不丢失技能，社区贡献复利增长。</p>
+      <p>agentskills.io 定义了五个核心规范：<strong>目录结构标准、元数据标准、接口协议、安全审计标准、发布与版本管理</strong>。由 Anthropic 牵头，联合数十家头部企业共同制定。这是一个真正意义上的行业公共品。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 15. ECOSYSTEM ============ -->
+  <section class="slide" data-title="Ecosystem Adoption">
+    <p class="kicker">// part 02 · 生态</p>
+    <h2 class="h2"><span class="accent">40+</span> 平台采纳 Skills 标准</h2>
+    <div class="grid g3 mt-l" style="font-size:14px">
+      <div class="card card-accent">
+        <h4>💻 IDE / 编辑器</h4>
+        <p class="dim">VS Code · Cursor · Trae · Kiro</p>
+      </div>
+      <div class="card card-accent">
+        <h4>⌨️ CLI / 终端</h4>
+        <p class="dim">Claude Code · Gemini CLI<br>OpenAI Codex · Amp<br>Mistral Vibe · Roo Code</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🔧 开源平台</h4>
+        <p class="dim">OpenHands · Goose<br>Mux · Emdash</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🤖 AI 平台</h4>
+        <p class="dim">Claude · Spring AI<br>Databricks · Snowflake</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🏥 垂直领域</h4>
+        <p class="dim">Agentman（医疗）<br>Firebender（Android）<br>Laravel Boost</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🛠 更多工具</h4>
+        <p class="dim">GitHub Copilot · Tabnine<br>Qodo · Superconductor</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>看看采纳情况——<strong>40 多个平台</strong>已经支持了 Skills 标准。</p>
+      <p>我按类别给大家列一下。IDE 和编辑器：VS Code、Cursor、Trae、Kiro。CLI 和终端：Claude Code、Gemini CLI、OpenAI Codex、Amp、Mistral Vibe、Roo Code。开源平台：OpenHands、Goose、Mux、Emdash。AI 平台：Claude、Spring AI、Databricks、Snowflake。垂直领域：医疗的 Agentman、Android 的 Firebender、Laravel 的 Boost。还有 GitHub Copilot、Tabnine 等。</p>
+      <p>注意一个特点——<strong>这些平台跨越了不同的厂商、不同的技术栈、不同的目标用户</strong>。从 Anthropic 到 Google 到 OpenAI 的生态都有。这说明 Skills 标准真的是行业共识，不是某一家公司的私有方案。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 16. SKILLS VS MCP VS TOOLS ============ -->
+  <section class="slide" data-title="Skills vs MCP vs Tools">
+    <p class="kicker">// part 02 · 定位辨析</p>
+    <h2 class="h2">Skills vs MCP vs Tools vs Subagents</h2>
+    <div class="stack mt-l" style="font-size:15px">
+      <div class="rule-row">
+        <span class="num" style="font-size:20px">MCP</span>
+        <div>
+          <b>连接外部系统和数据</b>
+          <p class="dim">MCP Server 连接数据库 → <strong>提供"访问"</strong>。Skills 说"用 A 列和 B 列计算指标 X" → <strong>提供"专知"</strong>。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num" style="font-size:20px">Tools</span>
+        <div>
+          <b>提供 Agent 基础能力</b>
+          <p class="dim">Tool 定义始终占上下文；Skills 按需加载。Tool 能力固定；Skills 可以包含<strong>"工具即需"</strong>的脚本。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num" style="font-size:20px">Sub</span>
+        <div>
+          <b>独立隔离的子 Agent</b>
+          <p class="dim">Subagent 有自己的上下文和权限；Skills 为<strong>主 Agent 和所有子 Agent</strong>提供专业知识。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>很多人会混淆 Skills、MCP、Tools 和 Subagents。我来做一个清晰的辨析。</p>
+      <p><strong>MCP 解决的是"连接"问题</strong>——连接你的数据库、API、服务。一个 MCP Server 把数据库接通了，但数据库里的数据怎么用、算什么指标，MCP 不管。这就是 Skills 要做的事——MCP 提供访问，Skills 提供专知。</p>
+      <p><strong>Tools 是 Agent 的基础能力</strong>——但 Tool 定义始终占上下文，而 Skills 是按需加载的。而且 Tools 的能力是固定的，Skills 可以包含"工具即需"的脚本，需要的时候才编译成工具。</p>
+      <p><strong>Subagents 是独立隔离的子 Agent</strong>——它们有自己的上下文和权限。而 Skills 是知识层，可以同时为主 Agent 和所有子 Agent 提供专业知识。在 Claude Code 里，你甚至可以在子 Agent 定义里指定它使用哪些 Skills。</p>
+      <p>一句话总结：MCP 接通路，Tools 给手，Subagents 分工，<strong>Skills 给脑子</strong>。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 17. SKILL CATEGORIES ============ -->
+  <section class="slide" data-title="Skill Categories">
+    <p class="kicker">// part 02 · 分类</p>
+    <h2 class="h2">四大技能<span class="accent">分类</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent">
+        <h4>🎨 创意设计类</h4>
+        <p class="dim">艺术创作提示词 · 音乐歌词生成 · UI 设计规范 · 品牌营销素材<br><strong>核心价值：将美学标准转化为可执行指令</strong></p>
+      </div>
+      <div class="card card-accent">
+        <h4>⚙️ 开发技术类</h4>
+        <p class="dim">Web 应用生成 · MCP 服务器搭建 · 代码审计 · DevOps 自动化<br><strong>核心价值：将工程实践封装为可复用流程</strong></p>
+      </div>
+      <div class="card card-accent">
+        <h4>🏢 企业沟通类</h4>
+        <p class="dim">品牌规范执行 · 流程自动化 · 跨部门协作 · 客户服务话术<br><strong>核心价值：将组织知识转化为 Agent 行为</strong></p>
+      </div>
+      <div class="card card-accent">
+        <h4>📄 文档处理类</h4>
+        <p class="dim">docx · pdf · pptx · xlsx 全格式处理<br><strong>核心价值：生产级参考实现，源码开放</strong></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>现在市面上有哪些类型的 Skills？我把它归纳为四大类。</p>
+      <p><strong>创意设计类</strong>——艺术创作提示词、音乐歌词生成、UI 设计规范、品牌营销素材。它的核心价值是将美学标准转化为可执行指令。比如你有一个品牌色和字体的 Skill，AI 就不会再用"AI 风格"来做设计。</p>
+      <p><strong>开发技术类</strong>——Web 应用生成、MCP 服务器搭建、代码审计、DevOps 自动化。核心价值是将工程实践封装为可复用流程。</p>
+      <p><strong>企业沟通类</strong>——品牌规范执行、流程自动化、跨部门协作、客户服务话术。核心价值是将组织知识转化为 Agent 行为。这一类我觉得最有商业潜力。</p>
+      <p><strong>文档处理类</strong>——docx、pdf、pptx、xlsx 四大格式全覆盖。这是 Anthropic 官方提供的生产级参考实现，源码开放。大家刚才看到的这个演示文稿，就是通过一个 PPT Skill 生成的。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 18. SKILL COMPOSITION ============ -->
+  <section class="slide" data-title="Skill Composition">
+    <p class="kicker">// part 02 · 组合</p>
+    <h2 class="h2">技能组合：<span class="accent">1+1 > 2</span></h2>
+    <div class="mt-l">
+      <div class="card card-accent" style="margin-bottom:16px">
+        <h4>🎯 场景：每周营销报告自动生成</h4>
+        <div class="grid g4 mt-s" style="gap:12px;font-size:14px">
+          <div style="padding:12px;background:var(--bg-soft);border-radius:8px;text-align:center">
+            <b style="color:var(--accent)">Brand Skill</b><br><span class="dim">品牌色、字体、Logo</span>
+          </div>
+          <div style="padding:12px;background:var(--bg-soft);border-radius:8px;text-align:center">
+            <b style="color:var(--accent)">PPTX Skill</b><br><span class="dim">创建幻灯片</span>
+          </div>
+          <div style="padding:12px;background:var(--bg-soft);border-radius:8px;text-align:center">
+            <b style="color:var(--accent)">BigQuery Skill</b><br><span class="dim">查询营销数据</span>
+          </div>
+          <div style="padding:12px;background:var(--bg-soft);border-radius:8px;text-align:center">
+            <b style="color:var(--accent)">Marketing Skill</b><br><span class="dim">分析指标、分配预算</span>
+          </div>
+        </div>
+        <p class="lede mt-m tc" style="font-size:15px">四个 Skill 组合 → 从原始数据到品牌化报告，<strong>端到端自动化</strong></p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>Skills 最强大的地方不是单个 Skill 的能力，而是<strong>组合</strong>。我举一个真实的例子。</p>
+      <p>场景是：每周营销报告自动生成。你需要四个 Skill 协同工作。Brand Skill 提供品牌色、字体和 Logo；PPTX Skill 负责创建幻灯片；BigQuery Skill 连接数据库查询营销数据；Marketing Skill 分析指标并做预算分配。</p>
+      <p>四个 Skill 组合在一起，Agent 就能从原始数据直接生成一份品牌化的报告幻灯片——<strong>端到端自动化</strong>。不需要人工介入任何环节。</p>
+      <p>这个组合能力是 Skills 架构的精髓。每个 Skill 各司其职，但拼在一起就能完成单个 Skill 做不到的事情。而且这种组合是<strong>声明式</strong>的——你不需要写编排代码，只要把相关 Skill 装上，Agent 自己就知道该调用哪些。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 19. SECTION: LATEST ============ -->
+  <section class="slide section-divider" data-title="Part 3">
+    <p class="kicker">part 03</p>
+    <h2 class="h1" style="font-size:clamp(36px,4.5vw,62px)">最新动态</h2>
+    <p class="lede">2026 年的技术突破与产业进展</p>
+    <aside class="notes">
+      <p>第二部分讲完了发展历程。现在进入第三部分——<strong>2026 年的最新动态</strong>。</p>
+      <p>这一部分信息密度会很高，我会聚焦在几个最有代表性的突破上。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 20. OPEN SOURCE REPO ============ -->
+  <section class="slide" data-title="Open Source Repo">
+    <p class="kicker">// part 03 · 开源爆发</p>
+    <h2 class="h2">anthropics/skills：<span class="accent">138k Star</span></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="feature-row"><span class="num orange">①</span><div><b>2026.5.17 正式开源</b><p class="dim">3 天斩获 138k Star、16.2k Fork，登顶 GitHub Trending</p></div></div>
+        <div class="feature-row"><span class="num blue">②</span><div><b>四大核心模块</b><p class="dim">/skills（技能库）· /spec（官方规范）<br>/template（开发模板）· /partners（合作技能）</p></div></div>
+        <div class="feature-row"><span class="num green">③</span><div><b>文档处理源码开放</b><p class="dim">docx / pdf / pptx / xlsx 生产级实现，可直接学习和复用</p></div></div>
+        <div class="feature-row"><span class="num purple">④</span><div><b>合作伙伴生态</b><p class="dim">Notion 官方 Skill 已收录，更多企业正在加入</p></div></div>
+      </div>
+      <div class="card card-accent">
+        <h4>📊 意义何在？</h4>
+        <p class="dim" style="font-size:15px;line-height:1.8">
+        ① <strong>技能标准化进入深水区</strong>——不再是纸面规范，而是可运行的参考实现<br><br>
+        ② <strong>降低创作门槛</strong>——开发者可以从模板起步，不需要从零设计<br><br>
+        ③ <strong>生态飞轮启动</strong>——更多 Skill → 更多用户 → 更多贡献者 → 更多 Skill
+        </p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>2026 年 5 月 17 日，Anthropic 在 GitHub 上正式开源了官方的 Skills 仓库。3 天时间拿下 138k Star 和 16.2k Fork，登顶 GitHub Trending 榜首。</p>
+      <p>这个仓库有四大核心模块：/skills 是技能示例库，/spec 是官方规范，/template 是开发模板，/partners 是合作伙伴贡献的技能——Notion 官方的 Skill 已经被收录了。</p>
+      <p>更重要的是文档处理的源码开放——docx、pdf、pptx、xlsx 的生产级实现，你可以直接学习和复用。这不再是纸面规范，而是可运行的参考实现。</p>
+      <p>右边这张卡片总结了它的意义。<strong>技能标准化进入深水区</strong>、<strong>降低创作门槛</strong>、<strong>生态飞轮启动</strong>——这三个效应叠加在一起，会极大地加速 Skills 生态的发展。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 21. COURSE ============ -->
+  <section class="slide" data-title="deeplearning.ai Course">
+    <p class="kicker">// part 03 · 教育生态</p>
+    <h2 class="h2">deeplearning.ai 专项课程</h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent">
+        <h4>📚 课程结构（7 课）</h4>
+        <div style="margin-top:12px;font-size:14px;line-height:2">
+          <p class="dim" style="margin:0">L1 · Why Agent Skills?（Part I & II）</p>
+          <p class="dim" style="margin:0">L2 · Skills vs Tools, MCP, and Subagents</p>
+          <p class="dim" style="margin:0">L3 · Exploring Pre-Built Skills</p>
+          <p class="dim" style="margin:0">L4 · Creating Custom Skills</p>
+          <p class="dim" style="margin:0">L5 · Skills with the Claude API</p>
+          <p class="dim" style="margin:0">L6 · Skills with Claude Code</p>
+          <p class="dim" style="margin:0">L7 · Skills with the Claude Agent SDK</p>
+        </div>
+      </div>
+      <div class="card card-accent">
+        <h4>🎯 覆盖全场景</h4>
+        <p class="dim" style="font-size:15px;line-height:1.8">
+        从<strong>概念理解</strong>（什么是 Skills、为什么需要）<br>
+        到<strong>实战使用</strong>（使用预置 Skills、组合 Skills）<br>
+        到<strong>自定义开发</strong>（SKILL.md 编写、脚本集成）<br>
+        到<strong>工程集成</strong>（API 调用、Claude Code、Agent SDK）<br><br>
+        <strong>完整覆盖了从入门到生产级部署的链路</strong>
+        </p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>2025 年第三季度，deeplearning.ai 推出了 Agent Skills 的专项课程。这是 Andrew Ng 团队做的，7 节课，覆盖了从概念到生产的完整链路。</p>
+      <p>课程从"为什么需要 Skills"开始，到 Skills 和其他概念的辨析，到使用预置 Skills，到自定义开发，再到通过 API、Claude Code、Agent SDK 集成。非常系统。</p>
+      <p>这个课程的出现本身就是一个信号——<strong>当一家教育机构开始做专项课程的时候，说明这个技术已经过了"实验"阶段，进入了"可教"阶段</strong>。而"可教"往往意味着"可规模化"。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 22. MARKETPLACE ============ -->
+  <section class="slide" data-title="Skill Marketplaces">
+    <p class="kicker">// part 03 · 市场生态</p>
+    <h2 class="h2">技能市场<span class="accent">生态</span>正在爆发</h2>
+    <div class="grid g3 mt-l">
+      <div class="card card-accent">
+        <h4>🔍 agentskills.io</h4>
+        <p class="dim">官方技能发现与索引平台<br>AI 搜索 · 用例分类 · 社区趋势</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🛒 agentskills.to</h4>
+        <p class="dim">开放技能交易市场<br>发现、分享和集成开发者技能<br>支持 Claude / Codex / Cursor / Amp</p>
+      </div>
+      <div class="card card-accent">
+        <h4>📋 agentskills.so</h4>
+        <p class="dim">中文社区技能发现平台<br>按行业、用例分类<br>社区构建的技能库</p>
+      </div>
+    </div>
+    <div class="card card-accent mt-m" style="border-top-color:var(--good)">
+      <h4 style="color:var(--good)">💡 核心洞察</h4>
+      <p class="dim" style="font-size:15px">当技能可以像 App 一样被发现、安装、评价和交易时，<strong>Agent 的能力边界就不再受限于模型本身</strong>，而取决于生态中有多少可用技能。</p>
+    </div>
+    <aside class="notes">
+      <p>最后看一下技能市场的生态。目前已经有多个技能发现和交易平台出现。</p>
+      <p>agentskills.io 是官方的技能发现和索引平台，支持 AI 搜索、按用例分类、社区趋势追踪。agentskills.to 是一个开放技能交易市场，开发者可以发布、分享和销售自己的技能。agentskills.so 是面向中文社区的技能发现平台。</p>
+      <p>这里有一个核心洞察——当技能可以像 App 一样被发现、安装、评价和交易的时候，<strong>Agent 的能力边界就不再受限于模型本身了，而取决于生态中有多少可用技能</strong>。这是一个范式的根本性转变。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 23. SECTION: PRACTICE ============ -->
+  <section class="slide section-divider" data-title="Part 4">
+    <p class="kicker">part 04</p>
+    <h2 class="h1" style="font-size:clamp(36px,4.5vw,62px)">实战经验</h2>
+    <p class="lede">WorkBuddy 的 Skills 落地实践</p>
+    <aside class="notes">
+      <p>好，前三部分我们讲了由来、发展、最新动态。现在进入今天最重要的部分——<strong>实战经验</strong>。</p>
+      <p>我会用 WorkBuddy 的真实案例，展示 Skills 从设计到落地到迭代的全过程。这一部分的信息量会最大，建议做好笔记。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 24. WORKBUDDY OVERVIEW ============ -->
+  <section class="slide" data-title="WorkBuddy Overview">
+    <p class="kicker">// part 04 · 产品</p>
+    <h2 class="h2">WorkBuddy 的<strong>技能架构</strong></h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="feature-row"><span class="num blue">①</span><div><b>完全兼容 Agent Skills 开放标准</b><p class="dim">SKILL.md 驱动、渐进式披露、跨平台可移植</p></div></div>
+        <div class="feature-row"><span class="num green">②</span><div><b>三级技能存储</b><p class="dim">用户级（~/.workbuddy/skills/）<br>项目级（.workbuddy/skills/）<br>内置技能（系统预装）</p></div></div>
+        <div class="feature-row"><span class="num orange">③</span><div><b>双重触发机制</b><p class="dim">自动触发：匹配关键词智能调用<br>手动触发：<code>@skill:name</code> 显式指定</p></div></div>
+        <div class="feature-row"><span class="num purple">④</span><div><b>MCP + Skills 双层增强</b><p class="dim">MCP 连接外部系统，Skills 提供领域专知<br>两者协同而非替代</p></div></div>
+      </div>
+      <div class="card card-accent">
+        <h4>🔑 关键设计决策</h4>
+        <p class="dim" style="font-size:15px;line-height:1.8">
+        <strong>1. 为什么选择开放标准？</strong><br>
+        避免生态锁定，复用社区成果<br><br>
+        <strong>2. 为什么三级存储？</strong><br>
+        用户级跨项目复用，项目级团队共享，内置保障基线<br><br>
+        <strong>3. 为什么双重触发？</strong><br>
+        新用户零学习成本（自动），老用户精确控制（手动）
+        </p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>WorkBuddy 的技能架构有几个关键设计决策，我一一说明。</p>
+      <p><strong>第一，我们完全兼容 Agent Skills 开放标准</strong>。SKILL.md 驱动、渐进式披露、跨平台可移植。为什么？因为我们要避免生态锁定，而且可以复用社区的成果——anthropics/skills 仓库里那些高质量的 Skill，WorkBuddy 用户可以直接用。</p>
+      <p><strong>第二，三级技能存储</strong>。用户级存在 ~/.workbuddy/skills/，跨项目复用；项目级存在 .workbuddy/skills/，团队共享；还有内置技能保障基线能力。</p>
+      <p><strong>第三，双重触发机制</strong>。自动触发通过关键词匹配智能调用——你说"画一个架构图"，系统自动加载 diagram Skill。手动触发用 @skill:name 显式指定——你明确知道自己要用什么。这个设计对新用户零学习成本，对老用户提供精确控制。</p>
+      <p><strong>第四，MCP 和 Skills 双层增强</strong>。MCP 连接外部系统，Skills 提供领域专知——两者协同而非替代。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 25. CASE 1: LARK ============ -->
+  <section class="slide" data-title="Case: Lark Integration">
+    <p class="kicker">// part 04 · 实战1</p>
+    <h2 class="h2">飞书全链路集成：<span class="accent">23 个 Skills</span></h2>
+    <div class="grid g3 mt-l" style="font-size:13.5px">
+      <div class="card card-accent">
+        <h4>📄 文档与知识</h4>
+        <p class="dim">lark-doc · lark-wiki<br>lark-sheets · lark-base<br>lark-slides · lark-markdown<br>lark-minutes · lark-drive</p>
+      </div>
+      <div class="card card-accent">
+        <h4>💬 沟通与协作</h4>
+        <p class="dim">lark-im · lark-mail<br>lark-calendar · lark-vc<br>lark-task · lark-contact<br>lark-approval · lark-okr</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🔧 工具与自动化</h4>
+        <p class="dim">lark-apps · lark-event<br>lark-whiteboard · lark-attendance<br>lark-skill-maker<br>lark-workflow-*</p>
+      </div>
+    </div>
+    <div class="card card-accent mt-m" style="border-top-color:var(--good)">
+      <h4 style="color:var(--good)">✨ 实战亮点</h4>
+      <p class="dim" style="font-size:15px">lark-skill-maker 允许用户<strong>在对话中创建自定义 Skill</strong>——"帮我把这个审批流程封装成技能"→ 自动生成 SKILL.md → 下次直接调用。<strong>技能的"自生产"闭环</strong>。</p>
+    </div>
+    <aside class="notes">
+      <p>第一个实战案例：飞书全链路集成。WorkBuddy 目前为飞书开发了 23 个 Skills，覆盖三大领域。</p>
+      <p>文档与知识这块——8 个 Skill，从文档读写到知识库管理到电子表格和多维表格，全链路覆盖。</p>
+      <p>沟通与协作——8 个 Skill，即时通讯、邮件、日历、视频会议、任务、通讯录、审批、OKR。这些 Skill 让 Agent 能真正参与企业的日常协作。</p>
+      <p>工具与自动化——7 个 Skill，包括一个特别有意思的叫 lark-skill-maker。它允许用户<strong>在对话中直接创建自定义 Skill</strong>。你说"帮我把这个审批流程封装成技能"，Agent 就自动生成 SKILL.md，下次直接调用。这就形成了一个<strong>技能的"自生产"闭环</strong>——用技能来创造技能。</p>
+      <p>23 个 Skill 加在一起，Agent 基本上能覆盖一个飞书用户的日常操作。这是 Skills 组合威力的一个非常好的例子。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 26. CASE 2: LEGAL ============ -->
+  <section class="slide" data-title="Case: Legal & Contract">
+    <p class="kicker">// part 04 · 实战2</p>
+    <h2 class="h2">法律 / 合同审查<strong>技能</strong></h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent">
+        <h4>⚖️ contract-review Skill</h4>
+        <p class="dim" style="font-size:15px;line-height:1.7">
+        <strong>触发场景：</strong>用户上传合同文件 / 提到"合同审查"<br><br>
+        <strong>技能包含：</strong><br>
+        · SKILL.md — 审查流程和风险点清单<br>
+        · references/ — 合同法条目、常见风险条款库<br>
+        · scripts/ — 关键条款自动提取<br><br>
+        <strong>输出：</strong>结构化审查意见书<br>
+        包含风险等级（P0/P1/P2）和修改建议
+        </p>
+      </div>
+      <div class="card card-accent">
+        <h4>📝 legal-knowledge-query Skill</h4>
+        <p class="dim" style="font-size:15px;line-height:1.7">
+        <strong>覆盖领域：</strong><br>
+        · 合同法 / 商业合同<br>
+        · 劳动法 / 劳动合同<br>
+        · 公司法 / 企业合规<br>
+        · 民法典通用条款<br><br>
+        <strong>面向非法律专业人士</strong>：<br>
+        通俗易懂的法律解答<br>
+        结构化报告：法律依据 → 通俗解释 → 实操建议
+        </p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>第二个实战案例：法律和合同审查。这展示了 Skills 在专业领域的深度应用。</p>
+      <p>contract-review Skill 的触发场景很自然——用户上传一个合同文件，或者说"帮我看看这个合同"，Skill 就自动加载了。它里面包含审查流程和风险点清单，还有合同法条目和常见风险条款库作为参考，以及自动提取关键条款的脚本。最终输出一份结构化的审查意见书，每个风险点都标了等级和修改建议。</p>
+      <p>legal-knowledge-query Skill 更偏知识查询——覆盖合同法、劳动法、公司法、民法典四大领域。面向的是非法律专业人士，所以输出格式是：法律依据、通俗解释、实操建议。让不懂法的人也能看懂。</p>
+      <p>这两个 Skill 组合使用，就是一个<strong>端到端的法律助手</strong>：先审查合同找风险，再查询相关法律条文，最后给出可操作的建议。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 27. CASE 3: FROM DATA TO REPORT ============ -->
+  <section class="slide" data-title="Case: Data to Report">
+    <p class="kicker">// part 04 · 实战3</p>
+    <h2 class="h2">从数据到报告：<span class="accent">多 Skill 协同</span></h2>
+    <div class="stack mt-l">
+      <div class="rule-row">
+        <span class="num blue">01</span>
+        <div>
+          <b>数据获取 · lark-base / lark-sheets</b>
+          <p class="dim">从飞书多维表格或电子表格读取原始数据，自动识别字段和类型</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">02</span>
+        <div>
+          <b>数据分析 · data-dashboard Skill</b>
+          <p class="dim">自动分析数据特征，生成可视化 HTML 数据看板</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num orange">03</span>
+        <div>
+          <b>报告生成 · lark-doc / pptx Skill</b>
+          <p class="dim">将分析结果写入飞书文档或生成演示文稿</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num purple">04</span>
+        <div>
+          <b>分发推送 · lark-im Skill</b>
+          <p class="dim">将报告发送到指定飞书群，附带关键指标摘要</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>第三个实战案例：从数据到报告的多 Skill 协同。这是一个真实的端到端工作流。</p>
+      <p><strong>第一步</strong>，用 lark-base 或 lark-sheets Skill 从飞书多维表格或电子表格读取原始数据。Skill 会自动识别字段名和数据类型。</p>
+      <p><strong>第二步</strong>，data-dashboard Skill 接手，自动分析数据特征，生成一个可视化的 HTML 数据看板。图表、指标卡、趋势线全自动。</p>
+      <p><strong>第三步</strong>，lark-doc 或 pptx Skill 把分析结果写入飞书文档或生成演示文稿。格式、排版、结构都按 Skill 里定义的规范来。</p>
+      <p><strong>第四步</strong>，lark-im Skill 把报告推送到指定的飞书群，附带关键指标的摘要。团队看到消息就能直接点开报告。</p>
+      <p>四个 Skill、四个步骤，<strong>从原始数据到团队报告，全程自动化</strong>。这就是 Skills 组合的威力——每个 Skill 做自己擅长的事，拼起来就是完整的业务闭环。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 28. SKILL CREATION PATHS ============ -->
+  <section class="slide" data-title="Skill Creation Paths">
+    <p class="kicker">// part 04 · 创建路径</p>
+    <h2 class="h2">WorkBuddy 的<strong>三种技能创建方式</strong></h2>
+    <div class="grid g3 mt-l">
+      <div class="card card-accent">
+        <h4>🎨 路径一：图形化创建</h4>
+        <p class="dim">在 Skills 管理界面可视化配置，无需写代码。定义触发词、执行动作和规则。<strong>推荐新手</strong></p>
+      </div>
+      <div class="card card-accent">
+        <h4>📝 路径二：YAML 模板导入</h4>
+        <p class="dim">基于标准 YAML 语法编写 Skill 定义文件，一键导入。适合<strong>复杂逻辑</strong>和团队协作。</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🤖 路径三：AI 反向生成</h4>
+        <p class="dim">当你执行三次结构相似的操作，系统自动识别模式并<strong>主动提示生成 Skill</strong>。最具"AI 感"的方式。</p>
+      </div>
+    </div>
+    <div class="card card-accent mt-m">
+      <h4>💡 实战心得</h4>
+      <p class="dim" style="font-size:15px">路径三的<strong>反向生成</strong>是最被低估的功能。很多用户不知道——他们重复操作 3 次后，系统会弹窗提示"检测到重复模式，是否创建为技能？"。这是 Skills 从"被动工具"变成<strong>"主动助手"</strong>的关键转折。</p>
+    </div>
+    <aside class="notes">
+      <p>WorkBuddy 提供了三种创建 Skill 的方式，对应不同技术背景的用户。</p>
+      <p><strong>路径一</strong>是图形化创建，在管理界面可视化配置，定义触发词、执行动作和规则。完全不用写代码，推荐新手用。</p>
+      <p><strong>路径二</strong>是 YAML 模板导入。用标准的 YAML 语法写一个 Skill 定义文件，一键导入。适合复杂逻辑和需要团队协作的场景——YAML 天然就支持版本管理。</p>
+      <p><strong>路径三</strong>最有意思——AI 反向生成。当你在 WorkBuddy 里执行了三次结构相似的操作，比如三次把不同路径的 Word 转成 PDF，系统会智能识别这个模式，主动提示你"是否创建为技能？"。然后它自动生成一个带变量参数的 Skill。</p>
+      <p>这个反向生成是最被低估的功能。它让 Skills 从"被动工具"——你得主动去创建——变成了<strong>"主动助手"</strong>——它自己发现你的重复模式并帮你自动化。这是真正体现 AI 价值的设计。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 29. LESSONS LEARNED ============ -->
+  <section class="slide" data-title="Lessons Learned">
+    <p class="kicker">// part 04 · 踩坑</p>
+    <h2 class="h2">我们踩过的<span class="accent">坑</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent" style="border-top-color:var(--bad)">
+        <h4>❌ 坑 1：Description 写得太泛</h4>
+        <p class="dim">"Helps with documents" → Agent 不知道何时该触发。<strong>正确写法</strong>："Create, read, and edit Word documents (.docx). Use when user provides a .docx file or asks to create a document."</p>
+      </div>
+      <div class="card card-accent" style="border-top-color:var(--bad)">
+        <h4>❌ 坑 2：SKILL.md 超过 1000 行</h4>
+        <p class="dim">指令太长，Agent 抓不住重点，执行效果反而更差。<strong>解决</strong>：拆分成主指令 + references，保持 500 行以内。</p>
+      </div>
+      <div class="card card-accent" style="border-top-color:var(--bad)">
+        <h4>❌ 坑 3：忽视渐进式披露</h4>
+        <p class="dim">把所有参考资料都塞进 SKILL.md，导致一触发就吃掉大量上下文。<strong>解决</strong>：L1/L2/L3 三层分离。</p>
+      </div>
+      <div class="card card-accent" style="border-top-color:var(--bad)">
+        <h4>❌ 坑 4：Skill 之间职责重叠</h4>
+        <p class="dim">两个 Skill 都在处理文档格式，Agent 不知道该用哪个。<strong>解决</strong>：description 里明确触发条件边界。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>开发 Skills 的过程中我们也踩了不少坑。我挑四个最典型的分享。</p>
+      <p><strong>第一个坑</strong>——Description 写得太泛。"Helps with documents" 这种描述，Agent 完全不知道什么时候该触发。正确的写法应该是具体到<strong>什么文件类型、什么用户行为</strong>触发。比如 "Create, read, and edit Word documents. Use when user provides a .docx file or asks to create a document."</p>
+      <p><strong>第二个坑</strong>——SKILL.md 超过 1000 行。很多人觉得指令越详细越好，但实际上太长了 Agent 抓不住重点，执行效果反而更差。我们的经验是<strong>控制在 500 行以内</strong>，详细的参考资料移到 references 目录。</p>
+      <p><strong>第三个坑</strong>——忽视渐进式披露。有人把所有参考资料都塞进 SKILL.md，一触发就吃掉大量上下文。解决方案就是严格执行 L1/L2/L3 三层分离。</p>
+      <p><strong>第四个坑</strong>——Skill 之间职责重叠。两个 Skill 都在处理文档格式，Agent 不知道该用哪个。解决方法是在 description 里明确触发条件的边界。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 30. BEST PRACTICES ============ -->
+  <section class="slide" data-title="Best Practices">
+    <p class="kicker">// part 04 · 最佳实践</p>
+    <h2 class="h2">技能开发<strong>最佳实践</strong></h2>
+    <div class="stack mt-l">
+      <div class="rule-row">
+        <span class="num green">01</span>
+        <div>
+          <b>Description 决定生死</b>
+          <p class="dim">同时说明<strong>做什么</strong>和<strong>何时用</strong>，包含具体关键词。这是 Agent 自动匹配的唯一依据。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">02</span>
+        <div>
+          <b>指令要像 SOP，不要像散文</b>
+          <p class="dim">步骤化、结构化、可验证。<strong>每一步都可以判断"做对了没有"</strong>，而不是开放式的指导。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">03</span>
+        <div>
+          <b>References 是"字典"，不是"小说"</b>
+          <p class="dim">每个 reference 文件聚焦一个主题，超过 100 行要加目录。Agent 需要的是<strong>可查可引用的知识块</strong>，不是长篇大论。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">04</span>
+        <div>
+          <b>测试所有目标模型</b>
+          <p class="dim">Sonnet 和 Haiku 的理解能力不同。<strong>同一个 Skill 在不同模型上表现可能差异很大</strong>，务必实际测试。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>总结一下技能开发的最佳实践，四条。</p>
+      <p><strong>第一条，Description 决定生死</strong>。它是 Agent 自动匹配的唯一依据。你必须同时说明"做什么"和"何时用"，包含具体关键词。写得好的 description，可以让 Agent 在用户说出相关词汇的时候<strong>百分之百自动触发</strong>。</p>
+      <p><strong>第二条，指令要像 SOP，不要像散文</strong>。步骤化、结构化、可验证。每一步都应该可以判断"做对了没有"——像标准操作流程，不是开放式的指导。</p>
+      <p><strong>第三条，References 是字典，不是小说</strong>。每个 reference 文件聚焦一个主题。超过 100 行的要加目录，方便 Agent 快速定位。它需要的是可查可引用的知识块，不是长篇大论。</p>
+      <p><strong>第四条，测试所有目标模型</strong>。Sonnet 和 Haiku 的理解能力不同，同一个 Skill 在不同模型上表现可能差异很大。务必实际测试，不能只在你的开发模型上验证过就上线。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 31. SECTION: FUTURE ============ -->
+  <section class="slide section-divider" data-title="Part 5">
+    <p class="kicker">part 05</p>
+    <h2 class="h1" style="font-size:clamp(36px,4.5vw,62px)">未来趋势</h2>
+    <p class="lede">Skills 将走向何方</p>
+    <aside class="notes">
+      <p>好，实战部分讲完了。现在进入第五部分——<strong>未来趋势</strong>。</p>
+      <p>我不是在做预言，而是在基于已有的数据和趋势做推演。大家带着批判性思维来听。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 32. FUTURE 1: MARKETPLACE ============ -->
+  <section class="slide" data-title="Future: Marketplace">
+    <p class="kicker">// part 05 · 趋势1</p>
+    <h2 class="h2">趋势一：技能市场<span class="accent">生态化</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent">
+        <h4>📈 规模预测</h4>
+        <p class="dim" style="font-size:16px;line-height:1.8">
+        预计到 2027 年，全球 Agent 技能市场规模<strong>超过 1000 亿美元</strong>。<br><br>
+        将出现专门的技能开发公司，专注法律、医疗、金融等垂直领域。<br><br>
+        技能评价体系、认证机制、定价模型将逐步完善。
+        </p>
+      </div>
+      <div class="card card-accent">
+        <h4>🔄 飞轮效应</h4>
+        <p class="dim" style="font-size:16px;line-height:1.8">
+        更多高质量 Skill → 更多用户采用<br>→ 更多开发者贡献 → 更多高质量 Skill<br><br>
+        <strong>类比：App Store 2008 年启动时的飞轮</strong>——一旦越过临界点，增长将呈指数级。</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>第一个趋势——技能市场生态化。</p>
+      <p>有预测说到 2027 年，全球 Agent 技能市场规模会超过 1000 亿美元。这个数字我不保证准确性，但方向是对的。会出现专门的技能开发公司，就像现在有专门的 App 开发公司一样。法律、医疗、金融这些垂直领域，会有专业的技能供应商。</p>
+      <p>更关键的是<strong>飞轮效应</strong>——更多高质量 Skill 吸引更多用户，更多用户吸引更多开发者，更多开发者产出更多高质量 Skill。这跟 2008 年 App Store 刚启动时的逻辑一模一样。一旦越过临界点，增长将呈指数级。</p>
+      <p>我们现在可能正处于那个临界点附近。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 33. FUTURE 2: SELF-EVOLVING ============ -->
+  <section class="slide" data-title="Future: Self-Evolving">
+    <p class="kicker">// part 05 · 趋势2</p>
+    <h2 class="h2">趋势二：<span class="accent">自进化</span>技能</h2>
+    <div class="grid g2 mt-l">
+      <div>
+        <div class="feature-row"><span class="num blue">①</span><div><b>基于使用反馈自动优化</b><p class="dim">用户修改了 AI 输出的某些部分 → 系统识别差异 → 自动更新 Skill 的 references</p></div></div>
+        <div class="feature-row"><span class="num green">②</span><div><b>跨用户知识蒸馏</b><p class="dim">100 个用户都在同一类任务上做了相似修改 → 蒸馏成通用最佳实践 → 推送到所有用户的 Skill</p></div></div>
+        <div class="feature-row"><span class="num orange">③</span><div><b>版本管理与回滚</b><p class="dim">每次自动更新都带版本号，效果变差可以一键回滚。Skill 和代码一样需要 CI/CD。</p></div></div>
+      </div>
+      <div class="card card-accent" style="border-top-color:var(--accent)">
+        <h4 style="color:var(--accent)">🧬 本质变化</h4>
+        <p class="dim" style="font-size:15px;line-height:1.8">
+        今天的 Skill 是<strong>静态的知识包</strong>——写好就不会变，除非手动更新。<br><br>
+        明天的 Skill 是<strong>活的有机体</strong>——它会随着使用不断进化，越用越好，越用越懂你。<br><br>
+        这是从"软件"到"生命体"的质变。
+        </p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>第二个趋势——自进化技能。这是我最兴奋的一个方向。</p>
+      <p>今天的 Skill 是静态的知识包——你写好了就不再变，除非手动更新。但未来会不同。</p>
+      <p><strong>第一层</strong>，基于使用反馈自动优化。如果用户每次都在 AI 输出的某些部分做相同的修改，系统能识别出这个差异，自动更新 Skill 的参考信息。你不用自己改，Skill 自己学会了。</p>
+      <p><strong>第二层</strong>，跨用户知识蒸馏。100 个用户都在同一类任务上做了相似修改，系统把这种共性蒸馏出来，变成通用最佳实践，推送给所有使用这个 Skill 的用户。这就像集体智慧在自动汇聚。</p>
+      <p><strong>第三层</strong>，版本管理和回滚。自动更新不总是对的方向，需要带版本号，效果变差就一键回滚。Skill 和代码一样需要 CI/CD。</p>
+      <p>从静态知识包到活的有机体——这是从"软件"到"生命体"的质变。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 34. FUTURE 3: BRIDGE ============ -->
+  <section class="slide" data-title="Future: Knowledge to Action">
+    <p class="kicker">// part 05 · 趋势3</p>
+    <h2 class="h2">趋势三：从知识到行动的<br><span class="accent">终极桥梁</span></h2>
+    <div class="stack mt-l">
+      <div class="rule-row">
+        <span class="num blue">过去</span>
+        <div>
+          <b>知识 → Prompt → 不可靠的输出</b>
+          <p class="dim">你把知识写成 prompt 喂给 AI，每次都要重新描述，输出质量波动大。<strong>知识是"死的"，传递是"一次性"的</strong>。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num green">现在</span>
+        <div>
+          <b>知识 → Skill → 可复用的行动</b>
+          <p class="dim">知识被编码成 Skill，按需加载、可组合、可分发。<strong>知识是"活的"，传递是"永久性"的</strong>。</p>
+        </div>
+      </div>
+      <div class="rule-row">
+        <span class="num orange">未来</span>
+        <div>
+          <b>知识 → 自进化 Skill → 持续优化的行动</b>
+          <p class="dim">Skill 在使用中自动优化、跨用户蒸馏最佳实践。<strong>知识变成"会生长的"，行动变成"越来越好的"</strong>。</p>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>第三个趋势，也是我今天最想传达的核心观点——Skills 是<strong>从知识到行动的终极桥梁</strong>。</p>
+      <p>过去，知识通过 prompt 传递给 AI，每次都要重新描述，输出质量波动大。知识是"死的"，传递是"一次性"的。</p>
+      <p>现在，知识被编码成 Skill，按需加载、可组合、可分发。知识变成"活的"，传递变成"永久性"的。你写一次，所有人都能用。</p>
+      <p>未来，Skill 在使用中自动优化，跨用户蒸馏最佳实践。知识变成"会生长的"，行动变成"越来越好的"。</p>
+      <p>这三步演化，本质上是<strong>知识的复利效应</strong>——每一次使用都在为下一次使用积累价值。这才是 Skills 真正的终局——不是"教 AI 做事"，而是"让知识在 AI 生态中流动和进化"。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 35. KEY INSIGHT ============ -->
+  <section class="slide" data-title="Key Insight">
+    <p class="kicker">// 核心洞察</p>
+    <h2 class="h1" style="font-size:clamp(32px,4vw,56px)">Skills 不只是"教 AI 做事"<br>它是 <span class="accent">知识可组合化、可分发化、可进化化</span><br>的基础设施</h2>
+    <aside class="notes">
+      <p>我再说一遍这个核心洞察——<strong>Skills 不只是"教 AI 做事"</strong>，虽然这是最直观的理解。</p>
+      <p>更深层的是，Skills 是<strong>知识可组合化、可分发化、可进化化</strong>的基础设施。</p>
+      <p>可组合——品牌 Skill 加 PPT Skill 加数据 Skill，组合出完整的报告工作流。<br>可分发——你写好一个 Skill，同事、社区、整个互联网都能用。<br>可进化——Skill 在使用中自动优化，越用越好。</p>
+      <p>这三点加在一起，让 Skills 成为 AI Agent 生态的<strong>基础设施层</strong>。就像 HTTP 是互联网的基础设施、App 是智能手机的基础设施一样，Skills 会成为 AI Agent 的基础设施。</p>
+    </aside>
+  </section>
+
+  <!-- ============ 36. Q&A ============ -->
+  <section class="slide" data-title="Q&A">
+    <p class="kicker">// 互动</p>
+    <h2 class="h1" style="font-size:clamp(36px,4.5vw,62px)">Q & A</h2>
+    <p class="lede mt-m">以下方向欢迎深入讨论：</p>
+    <div class="grid g2 mt-m">
+      <div class="card card-accent">
+        <h4>🤔 技术方向</h4>
+        <p class="dim">Skills 的安全边界？如何评估 Skill 质量？自进化技能的可控性？</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🏢 落地场景</h4>
+        <p class="dim">哪些行业最适合 Skills？企业内部的技能治理怎么搞？ROI 如何衡量？</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🔮 未来展望</h4>
+        <p class="dim">Skills 会取代传统的 SaaS 吗？技能市场的商业模式是什么？</p>
+      </div>
+      <div class="card card-accent">
+        <h4>🛠 实操建议</h4>
+        <p class="dim">如何开始第一个 Skill？现有工具链怎么接入？</p>
+      </div>
+    </div>
+    <aside class="notes">
+      <p>好，我的分享部分到这里结束。接下来是 Q&A 环节。</p>
+      <p>我列了四个方向的讨论提示——技术方向、落地场景、未来展望、实操建议。当然不限于此，任何关于 Skills 和 AI Agent 的问题都可以聊。</p>
+      <p>如果没有人立刻提问的话，我可以先抛几个常见问题出来——</p>
+    </aside>
+  </section>
+
+  <!-- ============ 37. THANKS ============ -->
+  <section class="slide" data-title="Thanks">
+    <p class="kicker">// 感谢</p>
+    <h2 class="h1 anim-fade-up" data-anim="fade-up" style="font-size:clamp(36px,4.5vw,62px)">谢谢大家<br><span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">从知识到行动</span></h2>
+    <div class="speaker mt-l">
+      <div class="av"></div>
+      <div><b>姚双</b><span>晴幂科技创始人 · 2026.06</span></div>
+    </div>
+    <div class="mt-m" style="font-size:14px;color:var(--text-3)">
+      <p>🔗 <span class="mono">agentskills.io</span> — Skills 开放标准</p>
+      <p>🔗 <span class="mono">github.com/anthropics/skills</span> — 官方技能仓库</p>
+      <p>🔗 <span class="mono">deeplearning.ai</span> — Agent Skills 专项课程</p>
+    </div>
+    <div class="deck-footer">
+      <span class="mono">#从知识到行动 #Skills #AIAgent</span>
+      <span class="slide-number" data-current="35" data-total="35"></span>
+    </div>
+    <aside class="notes">
+      <p>最后，感谢各位的时间。</p>
+      <p>今天我们聊了 Skills 的由来——从专用 Agent 到通用 Agent 的范式转换中，出现了"知识到行动"的缺口。我们聊了 Skills 的发展——从 Anthropic 内部实验到行业开放标准，40 多个平台采纳，138k Star 的开源仓库。我们聊了最新动态和实战经验——WorkBuddy 的 23 个飞书 Skills、法律和合同审查、端到端的数据到报告工作流。我们聊了未来趋势——技能市场生态化、自进化技能、从知识到行动的终极桥梁。</p>
+      <p>如果今天只能带走一句话，我希望是这句——<strong>Skills 不只是教 AI 做事，它是知识可组合化、可分发化、可进化化的基础设施</strong>。</p>
+      <p>这三个链接是我推荐大家进一步探索的起点。谢谢大家！</p>
+    </aside>
+  </section>
+
+</div>
+
+<div style="position:fixed;bottom:12px;left:12px;font-size:11px;color:#484f5866;z-index:100;pointer-events:none">
+  S 演讲者视图 · T 切换主题 · ← → 翻页 · F 全屏 · O 总览 · R 重置计时
+</div>
+
+<script src="/Users/shuangyao/.workbuddy/skills/html-ppt/assets/runtime.js"></script>
+</body>
+</html>
